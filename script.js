@@ -5,8 +5,7 @@ document.addEventListener( "DOMContentLoaded", function () {
     canvas.height = 600;
 
     class Game {
-        constructor( ctx, width, height )
-        {
+        constructor( ctx, width, height ) {
             this.ctx = ctx;
             this.width = width;
             this.height = height;
@@ -14,33 +13,39 @@ document.addEventListener( "DOMContentLoaded", function () {
             this.enemyInterval = 500;
             this.enemyTimer = 0;
             this.enemyTypes = ['worm', 'ghost', 'spider'];
+            
         }
 
-        update(deltaTime)
-        {
-            this.enemies = this.enemies.filter(object => !object.markedForDeletion)
-            if ( this.enemyTimer > this.enemyInterval )
-            {
+        drawBall( x, y, r ) {
+            ctx.beginPath();
+            ctx.arc( x, y, r, 0, 2 * Math.PI );
+            ctx.strokeStyle = "yellow";
+            ctx.stroke();
+            ctx.fillStyle = "red";
+            ctx.fill();
+        }
+
+        update( deltaTime ) {
+            this.enemies = this.enemies.filter( object => !object.markedForDeletion )
+            if ( this.enemyTimer > this.enemyInterval ) {
                 this.#addNewEnemy();
                 this.enemyTimer = 0;
-            } else
-            {
-                this.enemyTimer+=deltaTime;
+            } else {
+                this.enemyTimer += deltaTime;
             }
-            this.enemies.forEach( object => object.update(deltaTime) );
+            this.enemies.forEach( object => object.update( deltaTime ) );
+            this.drawBall( 100,100,20)
         }
 
-        draw()
-        {
-            this.enemies.forEach( object => object.draw(this.ctx) );
+        draw() {
+            this.enemies.forEach( object => object.draw( this.ctx ) );
         }
-        #addNewEnemy()
-        {
-            const randomEnemy = this.enemyTypes[Math.floor(Math.random() * this.enemyTypes.length)];
+        #addNewEnemy() {
+            const randomEnemy = this.enemyTypes[ Math.floor( Math.random() * this.enemyTypes.length ) ];
             if ( randomEnemy == 'worm' ) this.enemies.push( new Worm( this ) );
             else if ( randomEnemy == 'ghost' ) this.enemies.push( new Ghost( this ) );
             else this.enemies.push( new Spider( this ) );
-            
+
             /*this.enemies.sort( function ( a, b )
             {
                 return a.y - b.y;
@@ -49,8 +54,7 @@ document.addEventListener( "DOMContentLoaded", function () {
     }
 
     class Enemy {
-        constructor(game)
-        {
+        constructor( game ) {
             this.game = game;
             this.markedForDeletion = false;
             this.frameX;
@@ -59,36 +63,30 @@ document.addEventListener( "DOMContentLoaded", function () {
             this.frameTimer = 0;
         }
 
-        update(deltaTime)
-        {
-            this.x-=this.vx * deltaTime;
+        update( deltaTime ) {
+            this.x -= this.vx * deltaTime;
             if ( this.x < 0 - this.width ) this.markedForDeletion = true;
-            if ( this.frameTimer > this.frameIntervale )
-            {
+            if ( this.frameTimer > this.frameIntervale ) {
                 if ( this.frameX < this.maxFrame ) this.frameX++;
                 else this.frameX = 0;
                 this.frameTimer = 0;
-            } else
-            {
+            } else {
                 this.frameTimer += deltaTime;
             }
         }
 
-        draw(ctx)
-        {
-            ctx.drawImage( this.image, this.frameX*this.spriteWidth, 0, this.spriteWidth,this.spriteHight, this.x, this.y, this.width, this.height );
+        draw( ctx ) {
+            ctx.drawImage( this.image, this.frameX * this.spriteWidth, 0, this.spriteWidth, this.spriteHight, this.x, this.y, this.width, this.height );
         }
     }
 
-    class Worm extends Enemy
-    {
-        constructor(game)
-        {
+    class Worm extends Enemy {
+        constructor( game ) {
             super( game );
             this.spriteWidth = 229;
             this.spriteHight = 171;
-            this.width = this.spriteWidth/2;
-            this.height = this.spriteHight/2;
+            this.width = this.spriteWidth / 2;
+            this.height = this.spriteHight / 2;
             this.image = worm;
             this.x = this.game.width;
             this.y = this.game.height - this.height;
@@ -96,15 +94,13 @@ document.addEventListener( "DOMContentLoaded", function () {
         }
     }
 
-    class Ghost extends Enemy
-    {
-        constructor(game)
-        {
+    class Ghost extends Enemy {
+        constructor( game ) {
             super( game );
             this.spriteWidth = 261;
             this.spriteHight = 209;
-            this.width = this.spriteWidth/2;
-            this.height = this.spriteHight/2;
+            this.width = this.spriteWidth / 2;
+            this.height = this.spriteHight / 2;
             this.image = ghost;
             this.x = this.game.width;
             this.y = Math.random() * this.game.height * 0.5;
@@ -113,14 +109,12 @@ document.addEventListener( "DOMContentLoaded", function () {
             this.curve = Math.random() * 3;
         }
 
-        update(deltaTime)
-        {
+        update( deltaTime ) {
             super.update( deltaTime );
             this.y += Math.sin( this.angle ) * this.curve;
-            this.angle+=0.04;
+            this.angle += 0.04;
         }
-        draw(ctx)
-        {
+        draw( ctx ) {
             ctx.save();
             ctx.globalAlpha = 0.7;
             super.draw( ctx );
@@ -128,15 +122,13 @@ document.addEventListener( "DOMContentLoaded", function () {
         }
     }
 
-    class Spider extends Enemy
-    {
-        constructor(game)
-        {
+    class Spider extends Enemy {
+        constructor( game ) {
             super( game );
             this.spriteWidth = 310;
             this.spriteHight = 175;
-            this.width = this.spriteWidth/2;
-            this.height = this.spriteHight/2;
+            this.width = this.spriteWidth / 2;
+            this.height = this.spriteHight / 2;
             this.image = spider;
             this.x = Math.random() * this.game.width;
             this.y = 0 - this.height;
@@ -145,16 +137,14 @@ document.addEventListener( "DOMContentLoaded", function () {
             this.maxLength = Math.random() * this.game.height;
         }
 
-        update(deltaTime)
-        {
+        update( deltaTime ) {
             super.update( deltaTime );
             if ( this.y < 0 - this.height * 2 ) this.markedForDeletion = true;
             this.y += this.vy * deltaTime;
             if ( this.y > this.maxLength ) this.vy *= -1;
         }
 
-        draw(ctx)
-        {
+        draw( ctx ) {
             ctx.beginPath();
             ctx.moveTo( this.x + this.width / 2, 0 );
             ctx.lineTo( this.x + this.width / 2, this.y + 10 );
@@ -170,7 +160,7 @@ document.addEventListener( "DOMContentLoaded", function () {
         ctx.clearRect( 0, 0, canvas.width, canvas.height );
         const deltaTime = timeStamp - lastTime;
         lastTime = timeStamp;
-        game.update(deltaTime);
+        game.update( deltaTime );
         game.draw();
         requestAnimationFrame( animate );
     }
