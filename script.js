@@ -34,7 +34,7 @@ document.addEventListener( "DOMContentLoaded", function () {
                 this.enemyTimer += deltaTime;
             }
             this.enemies.forEach( object => object.update( deltaTime ) );
-            this.drawBall( 100,100,20)
+            this.drawBall( 100, 100, 20 );
         }
 
         draw() {
